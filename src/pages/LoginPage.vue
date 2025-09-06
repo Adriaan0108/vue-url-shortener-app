@@ -44,6 +44,14 @@
 
 <script setup>
 import { ref } from "vue";
+import { useLogin } from "../composables/useMutations";
+import { showErrorAlert } from "../utils/alert";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../store/modules/authStore";
+
+const { mutate: loginMutate } = useLogin();
+const router = useRouter();
+const auth = useAuthStore();
 
 const isLogin = ref(true);
 
@@ -64,8 +72,26 @@ const toggleForm = () => {
 };
 
 const handleLogin = () => {
-  console.log("Login with:", loginForm.value);
-  // API call here
+  loginMutate(
+    {
+      username: loginForm.value.username,
+      password: loginForm.value.password,
+    },
+    {
+      onSuccess: (response) => {
+        auth.setUser(response);
+
+        router.push("/dashboard");
+      },
+      onError: (err) => {
+        const errorMessage =
+          err?.response?.data?.detail || // API detail field
+          err?.message || // Axios/network error
+          "Failed to login"; // default fallback
+        showErrorAlert(errorMessage);
+      },
+    }
+  );
 };
 
 const handleSignup = () => {

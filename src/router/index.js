@@ -3,9 +3,14 @@ import LoginPage from "../pages/LoginPage.vue";
 import DashboardPage from "../pages/DashboardPage.vue";
 
 const routes = [
+  // Redirect root to /dashboard
   {
     path: "/",
-    name: "home",
+    redirect: "/dashboard",
+  },
+  {
+    path: "/dashboard",
+    name: "dashboard",
     component: DashboardPage,
   },
   {
