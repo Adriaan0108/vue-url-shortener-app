@@ -25,16 +25,16 @@
       <!-- User Links -->
       <div class="card">
         <h2>Your Links</h2>
-        <div v-if="links.length === 0">
+        <div v-if="!urls || urls.length === 0">
           <p>No links yet. Create one above!</p>
         </div>
         <ul v-else class="links-list">
-          <li v-for="(link, index) in links" :key="index">
+          <li v-for="(url, index) in urls" :key="url.id">
             <div class="link-info">
-              <a :href="link.short" target="_blank">{{ link.short }}</a>
-              <span class="clicks">{{ link.clicks }} clicks</span>
+              <a :href="url.shortUrl" target="_blank">{{ url.shortUrl }}</a>
+              <span class="clicks">{{ url.clickCount }} clicks</span>
             </div>
-            <small>Original: {{ link.original }}</small>
+            <small>Original: {{ url.originalUrl }}</small>
           </li>
         </ul>
       </div>
@@ -44,6 +44,11 @@
 
 <script setup>
 import { ref } from "vue";
+import { usePostUrl, useGetUrls } from "../composables/useMutations";
+import { showErrorAlert, showSuccessAlert } from "../utils/alert";
+
+const { mutate: postUrlMutate } = usePostUrl();
+const { data: urls, isLoading, isError, error, refetch } = useGetUrls();
 
 const walletBalance = ref(120.5);
 
@@ -57,15 +62,23 @@ const links = ref([
 ]);
 
 const createLink = () => {
-  // Mock short link creation
-  const shortCode = Math.random().toString(36).substring(2, 7);
-  const shortUrl = `https://sho.rt/${shortCode}`;
-  links.value.push({
-    original: newLink.value,
-    short: shortUrl,
-    clicks: 0,
-  });
-  newLink.value = "";
+  postUrlMutate(
+    {
+      originalUrl: newLink.value,
+    },
+    {
+      onSuccess: (response) => {
+        showSuccessAlert("URL shortened successfully");
+      },
+      onError: (err) => {
+        const errorMessage =
+          err?.response?.data?.detail || // API detail field
+          err?.message || // Axios/network error
+          "Failed to shorten URL"; // default fallback
+        showErrorAlert(errorMessage);
+      },
+    }
+  );
 };
 </script>
 
