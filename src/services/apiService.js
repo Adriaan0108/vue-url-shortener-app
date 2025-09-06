@@ -14,3 +14,8 @@ export const getUrls = async () => {
   const res = await axiosInstance.get("/url/all");
   return res.data;
 };
+
+export const postUrlClick = async (data) => {
+  const res = await axiosInstance.post("/url/click", data);
+  return res.data;
+};

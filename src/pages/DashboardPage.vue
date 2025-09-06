@@ -36,10 +36,12 @@
           <ul v-else class="links-list">
             <li v-for="url in myUrls" :key="url.id">
               <div class="link-info">
-                <a :href="url.shortUrl" target="_blank">{{ url.shortUrl }}</a>
+                <a href="#" @click.prevent="handleUrlClick(url)">{{
+                  url.shortUrl
+                }}</a>
                 <span class="clicks">{{ url.clickCount }} clicks</span>
               </div>
-              <small>Original: {{ url.originalUrl }}</small>
+              <!-- <small>Original: {{ url.originalUrl }}</small> -->
             </li>
           </ul>
         </div>
@@ -59,10 +61,12 @@
           <ul v-else class="links-list">
             <li v-for="url in otherUrls" :key="url.id">
               <div class="link-info">
-                <a :href="url.shortUrl" target="_blank">{{ url.shortUrl }}</a>
+                <a href="#" @click.prevent="handleUrlClick(url)">{{
+                  url.shortUrl
+                }}</a>
                 <span class="clicks">{{ url.clickCount }} clicks</span>
               </div>
-              <small>Original: {{ url.originalUrl }}</small>
+              <!-- <small>Original: {{ url.originalUrl }}</small> -->
             </li>
           </ul>
         </div>
@@ -73,19 +77,25 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import { usePostUrl, useGetUrls } from "../composables/useMutations";
+import {
+  usePostUrl,
+  useGetUrls,
+  usePostUrlClick,
+} from "../composables/useMutations";
 import { showErrorAlert, showSuccessAlert } from "../utils/alert";
+import { useAuthStore } from "../store/modules/authStore";
 
-// Current user ID (replace with actual auth logic)
-const currentUserId = 1;
+const auth = useAuthStore();
+
+const currentUserId = auth.user.id;
 
 const { mutate: postUrlMutate } = usePostUrl();
 const { data: urls, refetch } = useGetUrls();
+const { mutate: postUrlClickMutate } = usePostUrlClick();
 
 const walletBalance = ref(120.5);
 const newLink = ref("");
 
-// Expand/collapse states
 const showMyUrls = ref(true);
 const showOtherUrls = ref(true);
 
@@ -96,13 +106,34 @@ const toggleOtherUrls = () => {
   showOtherUrls.value = !showOtherUrls.value;
 };
 
-// Separate urls by creator
 const myUrls = computed(() =>
   (urls.value ?? []).filter((url) => url.createdBy === currentUserId)
 );
 const otherUrls = computed(() =>
   (urls.value ?? []).filter((url) => url.createdBy !== currentUserId)
 );
+
+const handleUrlClick = (url) => {
+  window.open(url.originalUrl, "_blank");
+
+  if (url.createdBy != currentUserId) {
+    postUrlClickMutate(
+      { urlId: url.id },
+      {
+        onSuccess: () => {
+          refetch(); // refresh list
+        },
+        onError: (err) => {
+          const errorMessage =
+            err?.response?.data?.detail ||
+            err?.message ||
+            "Failed to send URL click";
+          showErrorAlert(errorMessage);
+        },
+      }
+    );
+  }
+};
 
 const createLink = () => {
   postUrlMutate(
