@@ -24,57 +24,100 @@
 
       <!-- User Links -->
       <div class="card">
-        <h2>Your Links</h2>
-        <div v-if="!urls || urls.length === 0">
-          <p>No links yet. Create one above!</p>
+        <h2 @click="toggleMyUrls" style="cursor: pointer">
+          Your Links
+          <span>{{ showMyUrls ? "▲" : "▼" }}</span>
+        </h2>
+
+        <div v-if="showMyUrls">
+          <div v-if="!myUrls || myUrls.length === 0">
+            <p>You haven’t created any links yet.</p>
+          </div>
+          <ul v-else class="links-list">
+            <li v-for="url in myUrls" :key="url.id">
+              <div class="link-info">
+                <a :href="url.shortUrl" target="_blank">{{ url.shortUrl }}</a>
+                <span class="clicks">{{ url.clickCount }} clicks</span>
+              </div>
+              <small>Original: {{ url.originalUrl }}</small>
+            </li>
+          </ul>
         </div>
-        <ul v-else class="links-list">
-          <li v-for="(url, index) in urls" :key="url.id">
-            <div class="link-info">
-              <a :href="url.shortUrl" target="_blank">{{ url.shortUrl }}</a>
-              <span class="clicks">{{ url.clickCount }} clicks</span>
-            </div>
-            <small>Original: {{ url.originalUrl }}</small>
-          </li>
-        </ul>
+      </div>
+
+      <!-- Links by Other Users -->
+      <div class="card">
+        <h2 @click="toggleOtherUrls" style="cursor: pointer">
+          Other Users' Links
+          <span>{{ showOtherUrls ? "▲" : "▼" }}</span>
+        </h2>
+
+        <div v-if="showOtherUrls">
+          <div v-if="!otherUrls || otherUrls.length === 0">
+            <p>No links from other users.</p>
+          </div>
+          <ul v-else class="links-list">
+            <li v-for="url in otherUrls" :key="url.id">
+              <div class="link-info">
+                <a :href="url.shortUrl" target="_blank">{{ url.shortUrl }}</a>
+                <span class="clicks">{{ url.clickCount }} clicks</span>
+              </div>
+              <small>Original: {{ url.originalUrl }}</small>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { usePostUrl, useGetUrls } from "../composables/useMutations";
 import { showErrorAlert, showSuccessAlert } from "../utils/alert";
 
+// Current user ID (replace with actual auth logic)
+const currentUserId = 1;
+
 const { mutate: postUrlMutate } = usePostUrl();
-const { data: urls, isLoading, isError, error, refetch } = useGetUrls();
+const { data: urls, refetch } = useGetUrls();
 
 const walletBalance = ref(120.5);
-
 const newLink = ref("");
-const links = ref([
-  {
-    original: "https://example.com/some-long-page",
-    short: "https://sho.rt/abc123",
-    clicks: 42,
-  },
-]);
+
+// Expand/collapse states
+const showMyUrls = ref(true);
+const showOtherUrls = ref(true);
+
+const toggleMyUrls = () => {
+  showMyUrls.value = !showMyUrls.value;
+};
+const toggleOtherUrls = () => {
+  showOtherUrls.value = !showOtherUrls.value;
+};
+
+// Separate urls by creator
+const myUrls = computed(() =>
+  (urls.value ?? []).filter((url) => url.createdBy === currentUserId)
+);
+const otherUrls = computed(() =>
+  (urls.value ?? []).filter((url) => url.createdBy !== currentUserId)
+);
 
 const createLink = () => {
   postUrlMutate(
+    { originalUrl: newLink.value },
     {
-      originalUrl: newLink.value,
-    },
-    {
-      onSuccess: (response) => {
+      onSuccess: () => {
         showSuccessAlert("URL shortened successfully");
+        refetch(); // refresh list
+        newLink.value = "";
       },
       onError: (err) => {
         const errorMessage =
-          err?.response?.data?.detail || // API detail field
-          err?.message || // Axios/network error
-          "Failed to shorten URL"; // default fallback
+          err?.response?.data?.detail ||
+          err?.message ||
+          "Failed to shorten URL";
         showErrorAlert(errorMessage);
       },
     }

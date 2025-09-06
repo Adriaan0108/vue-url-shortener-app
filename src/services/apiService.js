@@ -11,6 +11,6 @@ export const postUrl = async (data) => {
 };
 
 export const getUrls = async () => {
-  const res = await axiosInstance.get("/url");
+  const res = await axiosInstance.get("/url/all");
   return res.data;
 };

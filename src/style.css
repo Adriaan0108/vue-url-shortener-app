@@ -161,3 +161,9 @@ button.success:hover {
   font-size: 0.9rem;
   color: #555;
 }
+
+h2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
