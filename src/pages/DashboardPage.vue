@@ -4,7 +4,7 @@
       <!-- Wallet Balance -->
       <div class="card">
         <h2>Wallet Balance</h2>
-        <p class="wallet-amount">$ {{ walletBalance.toFixed(2) }}</p>
+        <p class="wallet-amount">R {{ walletBalance.toFixed(2) }}</p>
       </div>
 
       <!-- Create Link -->
@@ -41,7 +41,7 @@
                 }}</a>
                 <span class="clicks">{{ url.clickCount }} clicks</span>
               </div>
-              <!-- <small>Original: {{ url.originalUrl }}</small> -->
+              <small>Original: {{ url.originalUrl }}</small>
             </li>
           </ul>
         </div>
@@ -66,7 +66,7 @@
                 }}</a>
                 <span class="clicks">{{ url.clickCount }} clicks</span>
               </div>
-              <!-- <small>Original: {{ url.originalUrl }}</small> -->
+              <small>Original: {{ url.originalUrl }}</small>
             </li>
           </ul>
         </div>
@@ -93,7 +93,6 @@ const { mutate: postUrlMutate } = usePostUrl();
 const { data: urls, refetch } = useGetUrls();
 const { mutate: postUrlClickMutate } = usePostUrlClick();
 
-const walletBalance = ref(120.5);
 const newLink = ref("");
 
 const showMyUrls = ref(true);
@@ -112,6 +111,13 @@ const myUrls = computed(() =>
 const otherUrls = computed(() =>
   (urls.value ?? []).filter((url) => url.createdBy !== currentUserId)
 );
+
+const walletBalance = computed(() => {
+  return myUrls.value.reduce(
+    (total, url) => total + (url.amountEarned || 0),
+    0
+  );
+});
 
 const handleUrlClick = (url) => {
   window.open(url.originalUrl, "_blank");
