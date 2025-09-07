@@ -20,6 +20,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 1rem;
+  width: 100%;
 }
 
 /* ===== Card Styling ===== */
@@ -28,8 +29,14 @@ body {
   border-radius: 12px;
   padding: 2rem;
   width: 100%;
-  max-width: 400px;
+  max-width: 100%; /* allow cards to fill container */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+}
+
+/* On login/register page, center and limit card width */
+.page-container > .card {
+  max-width: 400px; /* centered and fixed for forms */
 }
 
 /* ===== Headings ===== */
@@ -38,6 +45,14 @@ h2 {
   font-weight: bold;
   margin-bottom: 1.5rem;
   text-align: center;
+}
+
+/* Dashboard toggle headings */
+.dashboard h2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
 }
 
 /* ===== Form Elements ===== */
@@ -65,7 +80,6 @@ input:focus {
 
 /* ===== Buttons ===== */
 button {
-  width: 100%;
   padding: 0.75rem;
   font-size: 1rem;
   border: none;
@@ -73,8 +87,10 @@ button {
   cursor: pointer;
   font-weight: bold;
   transition: background 0.3s ease;
+  width: 100%; /* all buttons full width inside cards */
 }
 
+/* Primary button */
 button.primary {
   background: #3b82f6;
   color: #fff;
@@ -84,6 +100,7 @@ button.primary:hover {
   background: #2563eb;
 }
 
+/* Success button */
 button.success {
   background: #22c55e;
   color: #fff;
@@ -91,6 +108,17 @@ button.success {
 
 button.success:hover {
   background: #16a34a;
+}
+
+/* Danger button (Logout) */
+button.danger {
+  background: #e3342f;
+  color: white;
+  padding: 0.75rem;
+}
+
+button.danger:hover {
+  background: #cc1f1a;
 }
 
 /* ===== Links & Text ===== */
@@ -160,22 +188,4 @@ button.success:hover {
 .clicks {
   font-size: 0.9rem;
   color: #555;
-}
-
-h2 {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.danger {
-  background: #e3342f;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.danger:hover {
-  background: #cc1f1a;
 }
