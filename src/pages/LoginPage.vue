@@ -107,7 +107,6 @@ const handleSignup = () => {
     {
       onSuccess: (response) => {
         auth.setUser(response);
-
         router.push("/dashboard");
       },
       onError: (err) => {

@@ -1,6 +1,11 @@
 <template>
   <div class="page-container">
     <div class="dashboard">
+      <!-- Logout Button -->
+      <div class="flex justify-end mb-4">
+        <button class="danger" @click="handleLogout">Logout</button>
+      </div>
+
       <!-- Wallet Balance -->
       <div class="card">
         <h2>Wallet Balance</h2>
@@ -84,8 +89,10 @@ import {
 } from "../composables/useMutations";
 import { showErrorAlert, showSuccessAlert } from "../utils/alert";
 import { useAuthStore } from "../store/modules/authStore";
+import { useRouter } from "vue-router";
 
 const auth = useAuthStore();
+const router = useRouter();
 
 const currentUserId = auth.user.id;
 
@@ -159,6 +166,11 @@ const createLink = () => {
       },
     }
   );
+};
+
+const handleLogout = () => {
+  auth.logout(); // clear user from store
+  router.push("/login"); // redirect to login page
 };
 </script>
 
