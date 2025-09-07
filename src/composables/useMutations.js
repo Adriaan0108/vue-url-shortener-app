@@ -5,6 +5,7 @@ import {
   getUrls,
   postUrlClick,
   register,
+  getProfitGrowth,
 } from "../services/apiService";
 
 export function useLogin() {
@@ -35,5 +36,12 @@ export function useGetUrls() {
   return useQuery({
     queryKey: ["urls"], // unique key for caching
     queryFn: getUrls,
+  });
+}
+
+export function useGetProfitGrowth() {
+  return useQuery({
+    queryKey: ["profit"],
+    queryFn: getProfitGrowth,
   });
 }

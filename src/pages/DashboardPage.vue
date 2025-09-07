@@ -12,6 +12,8 @@
         <p class="wallet-amount">R {{ walletBalance.toFixed(2) }}</p>
       </div>
 
+      <ProfitGrowthChart />
+
       <!-- Create Link -->
       <div class="card">
         <h2>Create New Link</h2>
@@ -90,6 +92,7 @@ import {
 import { showErrorAlert, showSuccessAlert } from "../utils/alert";
 import { useAuthStore } from "../store/modules/authStore";
 import { useRouter } from "vue-router";
+import ProfitGrowthChart from "../components/ProfitGrowthChart.vue";
 
 const auth = useAuthStore();
 const router = useRouter();

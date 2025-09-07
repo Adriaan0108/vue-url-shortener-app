@@ -24,3 +24,8 @@ export const postUrlClick = async (data) => {
   const res = await axiosInstance.post("/url/click", data);
   return res.data;
 };
+
+export const getProfitGrowth = async () => {
+  const res = await axiosInstance.get("/url/profit-growth");
+  return res.data;
+};
