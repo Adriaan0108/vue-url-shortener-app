@@ -1,9 +1,21 @@
 import { useMutation, useQuery } from "@tanstack/vue-query";
-import { login, postUrl, getUrls, postUrlClick } from "../services/apiService";
+import {
+  login,
+  postUrl,
+  getUrls,
+  postUrlClick,
+  register,
+} from "../services/apiService";
 
 export function useLogin() {
   return useMutation({
     mutationFn: login,
+  });
+}
+
+export function useRegister() {
+  return useMutation({
+    mutationFn: register,
   });
 }
 

@@ -5,6 +5,11 @@ export const login = async (data) => {
   return res.data;
 };
 
+export const register = async (data) => {
+  const res = await axiosInstance.post("/auth/register", data);
+  return res.data;
+};
+
 export const postUrl = async (data) => {
   const res = await axiosInstance.post("/url", data);
   return res.data;

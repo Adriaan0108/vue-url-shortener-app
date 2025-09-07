@@ -44,12 +44,14 @@
 
 <script setup>
 import { ref } from "vue";
-import { useLogin } from "../composables/useMutations";
+import { useLogin, useRegister } from "../composables/useMutations";
 import { showErrorAlert } from "../utils/alert";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../store/modules/authStore";
 
 const { mutate: loginMutate } = useLogin();
+const { mutate: registerMutate } = useRegister();
+
 const router = useRouter();
 const auth = useAuthStore();
 
@@ -95,7 +97,25 @@ const handleLogin = () => {
 };
 
 const handleSignup = () => {
-  console.log("Signup with:", signupForm.value);
-  // API call here
+  registerMutate(
+    {
+      username: signupForm.value.username,
+      password: signupForm.value.password,
+      firstName: signupForm.value.firstname,
+      lastName: signupForm.value.lastname,
+    },
+    {
+      onSuccess: (response) => {
+        auth.setUser(response);
+
+        router.push("/dashboard");
+      },
+      onError: (err) => {
+        const errorMessage =
+          err?.response?.data?.detail || err?.message || "Failed to register";
+        showErrorAlert(errorMessage);
+      },
+    }
+  );
 };
 </script>
